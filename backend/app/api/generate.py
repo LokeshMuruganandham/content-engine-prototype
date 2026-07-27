@@ -1,4 +1,7 @@
-from fastapi import APIRouter
+
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.core.database import get_db
 
 from app.schemas.generate import (
     GenerateRequest,
@@ -15,5 +18,8 @@ router = APIRouter()
     status_code=201,
     tags=["Generation"],
 )
-def generate(request: GenerateRequest):
-    return create_generation_job()
+def generate(
+    request: GenerateRequest,
+    db: Session = Depends(get_db),
+):
+    return create_generation_job(request, db)

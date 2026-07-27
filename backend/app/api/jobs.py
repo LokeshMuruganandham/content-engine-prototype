@@ -1,6 +1,8 @@
 
-from fastapi import APIRouter
-
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.core.database import get_db
+from app.services.job_service import get_job
 from app.schemas.job import JobResponse
 
 router = APIRouter()
@@ -11,9 +13,8 @@ router = APIRouter()
     response_model=JobResponse,
     tags=["Jobs"],
 )
-def get_job(job_id: str):
-    return JobResponse(
-        job_id=job_id,
-        status="pending",
-        image_url=None,
-    )
+def get_job_endpoint(
+    job_id: str,
+    db: Session = Depends(get_db),
+):
+    return get_job(job_id, db)

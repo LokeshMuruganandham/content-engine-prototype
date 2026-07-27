@@ -1,20 +1,25 @@
 from uuid import uuid4
+from sqlalchemy.orm import Session
+from app.models.job import Job
+from app.schemas.generate import GenerateRequest, GenerateResponse
 
-from app.schemas.generate import GenerateResponse
 
+def create_generation_job(
+    request: GenerateRequest,
+    db: Session,
+) -> GenerateResponse:
 
-def create_generation_job() -> GenerateResponse:
-    """
-    Create a placeholder generation job.
+    job = Job(
+        product_name=request.product_name,
+        product_description=request.product_description,
+        status="pending",
+    )
 
-    Later this function will:
-    - Enhance the prompt using Gemini
-    - Generate an image using ComfyUI
-    - Store metadata in PostgreSQL
-    - Upload images to Supabase Storage
-    """
+    db.add(job)
+    db.commit()
+    db.refresh(job)
 
     return GenerateResponse(
-        job_id=str(uuid4()),
-        status="pending",
+        job_id=str(job.id),
+        status=job.status,
     )
